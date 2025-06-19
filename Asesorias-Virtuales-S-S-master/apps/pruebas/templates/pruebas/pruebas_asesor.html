@@ -1,0 +1,139 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Pruebas | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#0a2342; font-weight:700;">Gestión de Pruebas</h2>
+        <button class="btn btn-green" data-bs-toggle="modal" data-bs-target="#modalCrearPrueba">Crear prueba</button>
+    </div>
+    <div class="card p-4 shadow-sm">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Componente</th>
+                    <th>Grupo</th>
+                    <th>Fecha límite</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prueba in pruebas %}
+                <tr>
+                    <td>{{ prueba.nombre }}</td>
+                    <td>{{ prueba.componente.nombre }}</td>
+                    <td>{{ prueba.grupo.nombre }}</td>
+                    <td>{{ prueba.fecha_limite|date:'d/m/Y H:i' }}</td>
+                    <td>
+                        <a href="{% url 'entregas_prueba' prueba.id %}" class="btn btn-outline-primary btn-sm">Ver entregas</a>
+                        <form method="post" action="{% url 'eliminar_prueba' prueba.id %}" class="d-inline ms-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar esta prueba?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No hay pruebas registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Tabla de entregas de pruebas #}
+{% if pruebas %}
+  <h3 class="mt-4">Entregas de Pruebas</h3>
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Prueba</th>
+        <th>Aprendiz</th>
+        <th>Archivo</th>
+        <th>Fecha de Entrega</th>
+        <th>Calificación</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for prueba in pruebas %}
+        {% for entrega in prueba.entregas.all %}
+        <tr>
+          <td>{{ prueba.nombre }}</td>
+          <td>{{ entrega.aprendiz.get_full_name }}</td>
+          <td>
+            {% if entrega.archivo %}
+              <a href="{{ entrega.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Descargar PDF</a>
+            {% else %}
+              No entregado
+            {% endif %}
+          </td>
+          <td>{{ entrega.fecha_entrega|date:'d/m/Y H:i' }}</td>
+          <td>{{ entrega.calificacion|default:'-' }}</td>
+          <td>{{ entrega.observaciones|default:'-' }}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<!-- Modal Crear Prueba -->
+<div class="modal fade" id="modalCrearPrueba" tabindex="-1" aria-labelledby="modalCrearPruebaLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'crear_prueba' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalCrearPruebaLabel">Crear nueva prueba</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="componente" class="form-label">Componente</label>
+            <select name="componente" id="componente" class="form-select" required>
+              <option value="">Selecciona un componente</option>
+              {% for comp in componentes %}
+              <option value="{{ comp.id }}">{{ comp.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="grupo" class="form-label">Grupo</label>
+            <select name="grupo" id="grupo" class="form-select" required>
+              <option value="">Selecciona un grupo</option>
+              {% for grupo in grupos %}
+                {% if grupo.estado == 'activo' %}
+                  <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+                {% else %}
+                  <option value="{{ grupo.id }}" disabled>{{ grupo.nombre }} (inactivo)</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+            {% if not grupos|dictsort:'estado'|first.estado == 'activo' %}
+              <div class="alert alert-warning mt-2">No tienes grupos activos para asignar pruebas.</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="fecha_limite" class="form-label">Fecha límite</label>
+            <input type="datetime-local" name="fecha_limite" id="fecha_limite" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-green">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 

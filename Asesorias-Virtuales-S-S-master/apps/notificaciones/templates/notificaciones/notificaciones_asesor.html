@@ -1,0 +1,56 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Notificaciones | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-md-7">
+        <div class="card p-4 shadow-sm mb-4">
+            <h2 class="mb-3" style="color:#0a2342; font-weight:700;">Enviar notificación/correo masivo</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="grupo" class="form-label">Grupo</label>
+                    <select name="grupo" id="grupo" class="form-select" required>
+                        <option value="">Selecciona un grupo</option>
+                        {% for grupo in grupos %}
+                        <option value="{{ grupo.id }}">{{ grupo.nombre }} (NIT: {{ grupo.nit }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" name="titulo" id="titulo" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="mensaje" class="form-label">Mensaje</label>
+                    <textarea name="mensaje" id="mensaje" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-green">Enviar notificación</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card p-4 shadow-sm">
+            <h4 class="mb-3" style="color:#0a2342;">Historial de notificaciones</h4>
+            {% if notificaciones %}
+            <ul class="list-group">
+                {% for notif in notificaciones %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <b>{{ notif.titulo }}</b><br>
+                        <span class="text-muted">{{ notif.mensaje }}</span>
+                    </div>
+                    <span class="badge bg-primary">{{ notif.fecha|date:'d/m/Y H:i' }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="alert alert-info">No has enviado notificaciones aún.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

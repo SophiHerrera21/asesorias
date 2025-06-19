@@ -1,0 +1,47 @@
+{% extends 'usuarios/base_dashboard.html' %}
+{% load static %}
+{% block dashboard_sidebar %}
+    <li><a href="{% url 'usuarios:dashboard_aprendiz' %}" class="sidebar-link active"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+    <li><a href="{% url 'usuarios:perfil_aprendiz' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Mi perfil</span></a></li>
+    <li><a href="{% url 'usuarios:componentes_aprendiz' %}" class="sidebar-link"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+    <li><a href="{% url 'usuarios:grupos_aprendiz' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+    <li><a href="{% url 'usuarios:pruebas_aprendiz' %}" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+    <li><a href="{% url 'usuarios:pqrs_aprendiz' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+    <li><a href="{% url 'usuarios:notificaciones_aprendiz' %}" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+    <li><a href="{% url 'usuarios:reportes_aprendiz' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+{% endblock %}
+{% block dashboard_title %}Dashboard Aprendiz{% endblock %}
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Mis Grupos</h5>
+                <p class="card-text">Gestiona tus grupos de estudio y asesorías</p>
+                <a href="{% url 'usuarios:grupos_aprendiz' %}" class="btn btn-primary">Ver Grupos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Mis Pruebas</h5>
+                <p class="card-text">Revisa y entrega tus evaluaciones</p>
+                <a href="{% url 'usuarios:pruebas_aprendiz' %}" class="btn btn-success">Ver Pruebas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-question-circle fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">PQRS</h5>
+                <p class="card-text">Peticiones, quejas, reclamos y sugerencias</p>
+                <a href="{% url 'usuarios:pqrs_aprendiz' %}" class="btn btn-warning">Gestionar PQRS</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

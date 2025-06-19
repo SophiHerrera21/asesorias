@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Seleccionar Componentes | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_aprendiz' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_aprendiz' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:seleccionar_componentes' %}" class="sidebar-link active"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+        <li><a href="#" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+        <li><a href="#" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+        <li><a href="#" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="#" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+        <li><a href="#" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Selecciona hasta 2 componentes</h2>
+    {% if mensaje_error %}
+        <div class="alert alert-danger">{{ mensaje_error }}</div>
+    {% endif %}
+    {% if mensaje_exito %}
+        <div class="alert alert-success">{{ mensaje_exito }}</div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            {% for componente in componentes %}
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input componente-checkbox"
+                               type="checkbox"
+                               name="componentes"
+                               value="{{ componente.id }}"
+                               id="componente{{ componente.id }}"
+                               {% if componente.id in componentes_asignados %}checked disabled{% endif %}>
+                        <label class="form-check-label" for="componente{{ componente.id }}">
+                            {{ componente.nombre }}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-success btn-lg mt-3">Guardar selección</button>
+    </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.componente-checkbox');
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            let checked = document.querySelectorAll('.componente-checkbox:checked').length;
+            if (checked > 2) {
+                this.checked = false;
+                alert('Solo puedes seleccionar hasta 2 componentes.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

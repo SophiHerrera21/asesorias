@@ -1,0 +1,188 @@
+{% extends 'usuarios/base_dashboard.html' %}
+{% load static %}
+{% block dashboard_sidebar %}
+    <li><a href="{% url 'usuarios:dashboard_coordinador' %}" class="sidebar-link active"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+    <li><a href="{% url 'usuarios:perfil_coordinador' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Mi perfil</span></a></li>
+    <li><a href="{% url 'usuarios:lista_usuarios' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Gestión de Usuarios</span></a></li>
+    <li><a href="{% url 'usuarios:pqrs_coordinador' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+    <li><a href="{% url 'usuarios:grupos_coordinador' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+    <li><a href="{% url 'usuarios:reportes_coordinador' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+    <li><a href="{% url 'usuarios:configuracion_coordinador' %}" class="sidebar-link"><i class="fas fa-cogs sidebar-icon"></i><span class="sidebar-label">Configuración</span></a></li>
+{% endblock %}
+{% block dashboard_title %}Dashboard Coordinador{% endblock %}
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Gestión de Usuarios</h5>
+                <p class="card-text">Administra usuarios del sistema</p>
+                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-primary">Gestionar Usuarios</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-question-circle fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">PQRS</h5>
+                <p class="card-text">Gestiona peticiones y consultas</p>
+                <a href="{% url 'usuarios:pqrs_coordinador' %}" class="btn btn-warning">Ver PQRS</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Grupos</h5>
+                <p class="card-text">Administra grupos de estudio</p>
+                <a href="{% url 'usuarios:grupos_coordinador' %}" class="btn btn-success">Ver Grupos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Reportes</h5>
+                <p class="card-text">Genera reportes del sistema</p>
+                <a href="{% url 'usuarios:reportes_coordinador' %}" class="btn btn-info">Ver Reportes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-cogs fa-3x text-secondary mb-3"></i>
+                <h5 class="card-title">Configuración</h5>
+                <p class="card-text">Configura el sistema</p>
+                <a href="{% url 'usuarios:configuracion_coordinador' %}" class="btn btn-secondary">Configurar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-dark mb-3"></i>
+                <h5 class="card-title">Generar Reporte</h5>
+                <p class="card-text">Descarga reportes en PDF/Excel</p>
+                <a href="{% url 'exportar_pdf_usuarios_componentes_grupos' %}" class="btn btn-dark">Descargar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Mantén tus estilos aquí o agrégalos en base.html -->
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+// Gráfico de PQRS
+const pqrsCtx = document.getElementById('pqrsChart').getContext('2d');
+new Chart(pqrsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Peticiones', 'Quejas', 'Reclamos', 'Sugerencias'],
+        datasets: [{
+            label: 'PQRS por Tipo',
+            data: [
+                {{ pqrs_peticiones }},
+                {{ pqrs_quejas }},
+                {{ pqrs_reclamos }},
+                {{ pqrs_sugerencias }}
+            ],
+            backgroundColor: [
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(231, 76, 60, 0.8)',
+                'rgba(241, 196, 15, 0.8)',
+                'rgba(46, 204, 64, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Gráfico de estadísticas
+const estadisticasCtx = document.getElementById('estadisticasChart').getContext('2d');
+new Chart(estadisticasCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Usuarios Activos', 'Cuentas Bloqueadas', 'Solicitudes Pendientes', 'Reportes Generados'],
+        datasets: [{
+            label: 'Estadísticas del Sistema',
+            data: [{{ usuarios_activos }}, {{ cuentas_bloqueadas_count }}, {{ solicitudes_pendientes }}, {{ reportes_generados }}],
+            backgroundColor: [
+                'rgba(46, 204, 64, 0.8)',
+                'rgba(231, 76, 60, 0.8)',
+                'rgba(241, 196, 15, 0.8)',
+                'rgba(52, 152, 219, 0.8)'
+            ],
+            borderColor: [
+                'rgba(46, 204, 64, 1)',
+                'rgba(231, 76, 60, 1)',
+                'rgba(241, 196, 15, 1)',
+                'rgba(52, 152, 219, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function verPQRS(pqrsId) {
+    window.location.href = `/usuarios/pqrs/${pqrsId}/`;
+}
+
+function responderPQRS(pqrsId) {
+    window.location.href = `/usuarios/pqrs/${pqrsId}/responder/`;
+}
+
+function verDetalles(cuentaId) {
+    window.location.href = `/usuarios/cuenta-bloqueada/${cuentaId}/`;
+}
+
+function responderSolicitud(cuentaId) {
+    window.location.href = `/usuarios/responder-solicitud/${cuentaId}/`;
+}
+
+function generarReporte() {
+    window.location.href = "{% url 'usuarios:generar_reporte' %}";
+}
+
+function enviarNotificacion() {
+    window.location.href = "{% url 'usuarios:enviar_notificacion' %}";
+}
+
+function gestionarUsuarios() {
+    window.location.href = "{% url 'usuarios:gestion_usuarios' %}";
+}
+
+function gestionarPQRS() {
+    window.location.href = "{% url 'usuarios:pqrs_coordinador' %}";
+}
+</script>
+{% endblock %} 

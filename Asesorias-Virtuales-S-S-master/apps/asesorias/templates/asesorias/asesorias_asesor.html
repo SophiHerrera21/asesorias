@@ -1,0 +1,100 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Asesorías | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0" style="color:#0a2342; font-weight:700;">Asesorías Programadas</h2>
+        <a href="{% url 'asesorias:crear_asesoria' %}" class="btn btn-green">+ Nueva asesoría</a>
+    </div>
+    <div class="card p-4 shadow-sm">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Grupo</th>
+                    <th>Componente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Link videollamada</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asesoria in asesorias %}
+                <tr>
+                    <td>{{ asesoria.grupo.nombre }}</td>
+                    <td>{{ asesoria.componente.nombre }}</td>
+                    <td>{{ asesoria.fecha|date:'d/m/Y' }}</td>
+                    <td>{{ asesoria.hora|time:'H:i' }}</td>
+                    <td>
+                        {% if asesoria.realizada %}
+                        <span class="badge bg-success">Realizada</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asesoria.link_videollamada %}
+                        <a href="{{ asesoria.link_videollamada }}" target="_blank">Unirse</a>
+                        {% else %}
+                        <span class="text-muted">No asignado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'detalle_asesoria' asesoria.id %}" class="btn btn-outline-primary btn-sm">Ver</a>
+                        {% if not asesoria.realizada %}
+                        <a href="{% url 'asesorias:editar_asesoria' asesoria.id %}" class="btn btn-outline-success btn-sm">Editar</a>
+                        <form method="post" action="{% url 'marcar_realizada' asesoria.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-green btn-sm">Marcar realizada</button>
+                        </form>
+                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalReagendar{{ asesoria.id }}">Reagendar</button>
+                        <form method="post" action="{% url 'cancelar_asesoria' asesoria.id %}" class="d-inline ms-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Cancelar</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                <!-- Modal Reagendar Asesoría -->
+                <div class="modal fade" id="modalReagendar{{ asesoria.id }}" tabindex="-1" aria-labelledby="modalReagendarLabel{{ asesoria.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method="post" action="{% url 'reagendar_asesoria' asesoria.id %}">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modalReagendarLabel{{ asesoria.id }}">Reagendar Asesoría</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label for="fecha{{ asesoria.id }}" class="form-label">Nueva fecha</label>
+                            <input type="date" name="fecha" id="fecha{{ asesoria.id }}" class="form-control" required>
+                          </div>
+                          <div class="mb-3">
+                            <label for="hora{{ asesoria.id }}" class="form-label">Nueva hora</label>
+                            <input type="time" name="hora" id="hora{{ asesoria.id }}" class="form-control" required>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                          <button type="submit" class="btn btn-green">Reagendar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No hay asesorías programadas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

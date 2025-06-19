@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gestión de Cuentas Bloqueadas | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_coordinador' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_coordinador' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:gestion_usuarios' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Gestión de Usuarios</span></a></li>
+        <li><a href="{% url 'usuarios:cuentas_bloqueadas' %}" class="sidebar-link active"><i class="fas fa-lock sidebar-icon"></i><span class="sidebar-label">Cuentas Bloqueadas</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_coordinador' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+        <li><a href="{% url 'usuarios:configuracion' %}" class="sidebar-link"><i class="fas fa-cog sidebar-icon"></i><span class="sidebar-label">Configuración</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Gestión de Cuentas Bloqueadas</h2>
+    
+    <!-- Filtros -->
+    <div class="card p-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="buscarUsuario" placeholder="Buscar usuario...">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="filtroEstado">
+                    <option value="">Todos los estados</option>
+                    <option value="bloqueado">Bloqueado</option>
+                    <option value="solicitud">Solicitud de desbloqueo</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="filtroFecha">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-green w-100" onclick="aplicarFiltros()">Filtrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Cuentas Bloqueadas -->
+    <div class="card p-4">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Fecha Bloqueo</th>
+                        <th>Razón</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cuenta in cuentas_bloqueadas %}
+                    <tr>
+                        <td>{{ cuenta.usuario.get_full_name }}</td>
+                        <td>{{ cuenta.usuario.email }}</td>
+                        <td>{{ cuenta.fecha_bloqueo|date:"d/m/Y H:i" }}</td>
+                        <td>{{ cuenta.razon_bloqueo }}</td>
+                        <td>
+                            {% if cuenta.solicitud_desbloqueo %}
+                            <span class="badge bg-warning">Solicitud Pendiente</span>
+                            {% else %}
+                            <span class="badge bg-danger">Bloqueada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-info" onclick="verDetalles('{{ cuenta.id }}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if cuenta.solicitud_desbloqueo %}
+                                <button class="btn btn-sm btn-success" onclick="desbloquearCuenta('{{ cuenta.id }}')">
+                                    <i class="fas fa-unlock"></i>
+                                </button>
+                                <button class="btn btn-sm btn-warning" onclick="responderSolicitud('{{ cuenta.id }}')">
+                                    <i class="fas fa-reply"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No hay cuentas bloqueadas actualmente</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Detalles -->
+    <div class="modal fade" id="detallesModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles de la Cuenta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detallesContenido"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+function aplicarFiltros() {
+    const usuario = document.getElementById('buscarUsuario').value;
+    const estado = document.getElementById('filtroEstado').value;
+    const fecha = document.getElementById('filtroFecha').value;
+    
+    // Lógica para aplicar filtros
+    window.location.href = `{% url 'usuarios:cuentas_bloqueadas' %}?usuario=${usuario}&estado=${estado}&fecha=${fecha}`;
+}
+
+function verDetalles(cuentaId) {
+    // Lógica para cargar y mostrar detalles
+    fetch(`/usuarios/cuenta-bloqueada/${cuentaId}/detalles/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('detallesContenido').innerHTML = `
+                <p><strong>Usuario:</strong> ${data.nombre_completo}</p>
+                <p><strong>Email:</strong> ${data.email}</p>
+                <p><strong>Fecha de Bloqueo:</strong> ${data.fecha_bloqueo}</p>
+                <p><strong>Razón:</strong> ${data.razon}</p>
+                <p><strong>Último Acceso:</strong> ${data.ultimo_acceso}</p>
+                ${data.solicitud ? `
+                    <hr>
+                    <h6>Solicitud de Desbloqueo</h6>
+                    <p><strong>Fecha:</strong> ${data.solicitud.fecha}</p>
+                    <p><strong>Mensaje:</strong> ${data.solicitud.mensaje}</p>
+                ` : ''}
+            `;
+            new bootstrap.Modal(document.getElementById('detallesModal')).show();
+        });
+}
+
+function desbloquearCuenta(cuentaId) {
+    if (confirm('¿Está seguro de desbloquear esta cuenta?')) {
+        fetch(`/usuarios/cuenta-bloqueada/${cuentaId}/desbloquear/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Cuenta desbloqueada exitosamente');
+                location.reload();
+            } else {
+                alert('Error al desbloquear la cuenta');
+            }
+        });
+    }
+}
+
+function responderSolicitud(cuentaId) {
+    const respuesta = prompt('Ingrese su respuesta a la solicitud de desbloqueo:');
+    if (respuesta) {
+        fetch(`/usuarios/cuenta-bloqueada/${cuentaId}/responder/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ respuesta })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Respuesta enviada exitosamente');
+                location.reload();
+            } else {
+                alert('Error al enviar la respuesta');
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

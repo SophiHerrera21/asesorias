@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio | S&S Asesorías Virtuales{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Hero Section -->
+    <section class="hero-section py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-white">
+                    <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInLeft">
+                        Bienvenido a S&S Asesorías Virtuales
+                    </h1>
+                    <p class="lead mb-4 animate__animated animate__fadeInLeft animate__delay-1s">
+                        Gestiona tus asesorías educativas de forma fácil, moderna y segura. 
+                        Una plataforma diseñada para conectar aprendices, asesores y coordinadores.
+                    </p>
+                    <div class="d-flex gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                        <a href="{% url 'usuarios:login' %}" class="btn btn-light btn-lg px-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                        <a href="{% url 'usuarios:seleccionar_rol' %}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block animate__animated animate__fadeInRight">
+                    <img src="{% static 'img/hero-image.png' %}" alt="Asesorías Virtuales" class="img-fluid" 
+                         onerror="this.src='{% static 'img/default-hero.png' %}'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">¿Qué ofrecemos?</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-users fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Gestión de Grupos</h3>
+                            <p class="text-muted">
+                                Organiza y administra grupos de aprendizaje de manera eficiente.
+                                Mantén un seguimiento detallado del progreso de cada grupo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-comments fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Sistema PQRS</h3>
+                            <p class="text-muted">
+                                Canaliza y gestiona peticiones, quejas, reclamos y sugerencias.
+                                Mantén una comunicación efectiva con todos los usuarios.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-chart-line fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Reportes y Estadísticas</h3>
+                            <p class="text-muted">
+                                Accede a informes detallados y estadísticas en tiempo real.
+                                Toma decisiones basadas en datos precisos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roles Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Roles en la Plataforma</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body p-4">
+                            <div class="role-icon mb-3">
+                                <i class="fas fa-user-graduate fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Aprendiz</h3>
+                            <ul class="list-unstyled text-muted">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Accede a grupos de estudio</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Realiza PQRS</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Participa en pruebas</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Gestiona tu perfil</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body p-4">
+                            <div class="role-icon mb-3">
+                                <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Asesor</h3>
+                            <ul class="list-unstyled text-muted">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Gestiona grupos</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Atiende PQRS</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Crea y evalúa pruebas</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Realiza seguimiento</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0">
+                        <div class="card-body p-4">
+                            <div class="role-icon mb-3">
+                                <i class="fas fa-user-tie fa-3x text-primary"></i>
+                            </div>
+                            <h3 class="h5 mb-3">Coordinador</h3>
+                            <ul class="list-unstyled text-muted">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Administra usuarios</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Gestiona PQRS</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Genera reportes</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Supervisa actividades</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2 class="mb-4">¿Listo para comenzar?</h2>
+            <p class="lead mb-4">Únete a nuestra plataforma y forma parte de la comunidad educativa</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'usuarios:login' %}" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </a>
+                <a href="{% url 'usuarios:seleccionar_rol' %}" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-user-plus me-2"></i>Registrarse
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .feature-icon, .role-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        background: var(--light-bg);
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover .feature-icon,
+    .card:hover .role-icon {
+        transform: scale(1.1);
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: auto;
+            padding: 4rem 0;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %} 

@@ -1,0 +1,313 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Configuración | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+{% endblock %}
+{% block content %}
+<div class="container animate__animated animate__fadeIn" style="max-width: 900px;">
+    <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Configuración Institucional</h2>
+    <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="institucional-tab" data-bs-toggle="tab" data-bs-target="#institucional" type="button" role="tab">Ajustes institucionales</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="componentes-tab" data-bs-toggle="tab" data-bs-target="#componentes" type="button" role="tab">Componentes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="parametros-tab" data-bs-toggle="tab" data-bs-target="#parametros" type="button" role="tab">Parámetros generales</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="configTabsContent">
+        <!-- Pestaña de Ajustes Institucionales -->
+        <div class="tab-pane fade show active" id="institucional" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Información Institucional</h5>
+                    <form id="institucionalForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de la Institución</label>
+                            <input type="text" class="form-control" name="nombre_institucion" value="{{ config.nombre_institucion }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" name="direccion" value="{{ config.direccion }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" value="{{ config.telefono }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" name="email" value="{{ config.email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Logo</label>
+                            <input type="file" class="form-control" name="logo" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña de Componentes -->
+        <div class="tab-pane fade" id="componentes" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Gestión de Componentes</h5>
+                        <button class="btn btn-success" onclick="agregarComponente()">
+                            <i class="fas fa-plus"></i> Nuevo Componente
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for componente in componentes %}
+                                <tr>
+                                    <td>{{ componente.nombre }}</td>
+                                    <td>{{ componente.descripcion }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ componente.estado|yesno:'success,danger' }}">
+                                            {{ componente.estado|yesno:'Activo,Inactivo' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" onclick="editarComponente({{ componente.id }})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="eliminarComponente({{ componente.id }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña de Parámetros Generales -->
+        <div class="tab-pane fade" id="parametros" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Parámetros del Sistema</h5>
+                    <form id="parametrosForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tiempo máximo de sesión (minutos)</label>
+                            <input type="number" class="form-control" name="tiempo_sesion" value="{{ config.tiempo_sesion }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Número máximo de intentos de inicio de sesión</label>
+                            <input type="number" class="form-control" name="max_intentos_login" value="{{ config.max_intentos_login }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tiempo de bloqueo por intentos fallidos (minutos)</label>
+                            <input type="number" class="form-control" name="tiempo_bloqueo" value="{{ config.tiempo_bloqueo }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tamaño máximo de archivos (MB)</label>
+                            <input type="number" class="form-control" name="max_tamano_archivo" value="{{ config.max_tamano_archivo }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tipos de archivo permitidos</label>
+                            <input type="text" class="form-control" name="tipos_archivo" value="{{ config.tipos_archivo }}">
+                            <small class="form-text text-muted">Separados por comas (ej: pdf,doc,docx)</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Componentes -->
+<div class="modal fade" id="componenteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Componente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="componenteForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="estado" id="estadoComponente">
+                            <label class="form-check-label" for="estadoComponente">Activo</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarComponente()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Inicializar modales
+const componenteModal = new bootstrap.Modal(document.getElementById('componenteModal'));
+let componenteId = null;
+
+// Funciones para Componentes
+function agregarComponente() {
+    componenteId = null;
+    document.getElementById('componenteForm').reset();
+    componenteModal.show();
+}
+
+function editarComponente(id) {
+    componenteId = id;
+    fetch(`/usuarios/componente/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+            const form = document.getElementById('componenteForm');
+            form.nombre.value = data.nombre;
+            form.descripcion.value = data.descripcion;
+            form.estado.checked = data.estado;
+            componenteModal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar el componente');
+        });
+}
+
+function guardarComponente() {
+    const form = document.getElementById('componenteForm');
+    const data = {
+        nombre: form.nombre.value,
+        descripcion: form.descripcion.value,
+        estado: form.estado.checked
+    };
+
+    const url = componenteId ? `/usuarios/componente/${componenteId}/` : '/usuarios/componente/';
+    const method = componenteId ? 'PUT' : 'POST';
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        componenteModal.hide();
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el componente');
+    });
+}
+
+function eliminarComponente(id) {
+    if (confirm('¿Está seguro de eliminar este componente?')) {
+        fetch(`/usuarios/componente/${id}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                throw new Error('Error al eliminar el componente');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar el componente');
+        });
+    }
+}
+
+// Funciones para formularios
+document.getElementById('institucionalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/usuarios/configuracion/institucional/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Configuración guardada exitosamente');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar la configuración');
+    });
+});
+
+document.getElementById('parametrosForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/usuarios/configuracion/parametros/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Parámetros guardados exitosamente');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar los parámetros');
+    });
+});
+
+// Función auxiliar para obtener el token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

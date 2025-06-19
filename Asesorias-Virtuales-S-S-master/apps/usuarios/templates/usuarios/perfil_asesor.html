@@ -1,0 +1,115 @@
+{% extends 'usuarios/base_dashboard.html' %}
+{% load static %}
+{% block dashboard_title %}Mi perfil{% endblock %}
+{% block dashboard_content %}
+<div class="container">
+    {% if request.GET.edit %}
+        <!-- Formulario de edición -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user me-2"></i>Datos Personales</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% for field in usuario_form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger">
+                                            {% for error in field.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i>Datos de Asesor</h5>
+                    </div>
+                    <div class="card-body">
+                            {% for field in asesor_form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger">
+                                            {% for error in field.errors %}
+                                                <small>{{ error }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                <a href="{% url 'usuarios:perfil_asesor' %}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Vista de perfil -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow p-4" style="border-radius: 18px;">
+                    <div class="d-flex flex-column align-items-center mb-4">
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; font-size: 3rem; color: #1e3a8a;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">{{ usuario.get_full_name|default:usuario.username }}</h4>
+                        <span class="text-muted">{{ usuario.email }}</span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary mb-3"><i class="fas fa-user me-2"></i>Datos Personales</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><b>Teléfono:</b> {{ usuario.telefono|default:'No registrado' }}</li>
+                                <li class="mb-2"><b>Dirección:</b> {{ usuario.direccion|default:'No registrada' }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-success mb-3"><i class="fas fa-user-tie me-2"></i>Datos de Asesor</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><b>Especialidad:</b> {{ usuario.asesor.especialidad|default:'No registrada' }}</li>
+                                <li class="mb-2"><b>Título:</b> {{ usuario.asesor.titulo|default:'No registrado' }}</li>
+                                <li class="mb-2"><b>Experiencia:</b> {{ usuario.asesor.experiencia|default:'No registrada'|truncatechars:50 }}</li>
+                                <li class="mb-2"><b>Disponibilidad:</b> {{ usuario.asesor.disponibilidad|default:'No registrada'|truncatechars:50 }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between gap-2 mt-4">
+                        <a href="{% url 'usuarios:perfil_asesor' %}?edit=1" class="btn btn-outline-primary flex-fill">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </a>
+                        <a href="{% url 'usuarios:cambiar_password' %}" class="btn btn-outline-warning flex-fill">
+                            <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                        </a>
+                        <a href="{% url 'exportar_pdf_usuarios_componentes_grupos' %}" class="btn btn-success flex-fill">
+                            <i class="fas fa-file-alt me-2"></i>Generar Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

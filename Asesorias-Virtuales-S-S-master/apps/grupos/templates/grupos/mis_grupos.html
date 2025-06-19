@@ -1,0 +1,51 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Mis grupos | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Mis grupos</h2>
+        {% if grupos %}
+        <div class="row g-4">
+            {% for grupo in grupos %}
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm grupo-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <span class="badge bg-primary">NIT: {{ grupo.nit }}</span>
+                            <h5 class="mt-2 mb-0" style="color:#0a2342;">{{ grupo.nombre }}</h5>
+                            <span class="text-muted">Componente: {{ grupo.componente }}</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">Asesor</span><br>
+                            <span style="color:#0a2342; font-weight:500;">{{ grupo.asesor }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <b>Compañeros:</b>
+                        <ul class="list-unstyled mb-0">
+                            {% for comp in grupo.companeros %}
+                            <li><i class="bi bi-person-circle"></i> {{ comp }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% if grupo.link_reunion %}
+                    <div class="mb-2">
+                        <b>Próxima reunión:</b><br>
+                        <a href="{{ grupo.link_reunion }}" target="_blank" class="btn btn-outline-success btn-sm mt-1">Unirse a la reunión</a>
+                        <span class="ms-2 text-muted">{{ grupo.fecha_reunion }} {{ grupo.hora_reunion }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info mt-4">Aún no has sido asignado a ningún grupo. Selecciona tus componentes para ser asignado automáticamente.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

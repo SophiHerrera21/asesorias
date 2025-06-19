@@ -1,0 +1,77 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}PQRS | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm mb-4">
+            <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Enviar PQRS</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.tipo.id_for_label }}" class="form-label">{{ form.tipo.label }}</label>
+                    {{ form.tipo }}
+                    {% if form.tipo.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.tipo.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.titulo.id_for_label }}" class="form-label">{{ form.titulo.label }}</label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.titulo.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.descripcion.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-green">Enviar PQRS</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 shadow-sm">
+            <h3 class="mb-3" style="color:#0a2342; font-weight:700;">Mis PQRS</h3>
+            {% if pqrs_list %}
+            <div class="list-group">
+                {% for pqrs in pqrs_list %}
+                <a href="{% url 'pqrs:detalle_pqrs' pqrs.id %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ pqrs.titulo }}</h6>
+                        <small>{{ pqrs.fecha_creacion|date:'d/m/Y' }}</small>
+                    </div>
+                    <p class="mb-1">{{ pqrs.get_tipo_display }}</p>
+                    <small>
+                        {% if pqrs.estado == 'pendiente' %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                        {% elif pqrs.estado == 'en_proceso' %}
+                        <span class="badge bg-info">En Proceso</span>
+                        {% else %}
+                        <span class="badge bg-success">Resuelto</span>
+                        {% endif %}
+                    </small>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                No has enviado ninguna PQRS.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

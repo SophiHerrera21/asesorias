@@ -1,0 +1,67 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Detalle PQRS | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center animate__animated animate__fadeIn">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 style="color:#0a2342; font-weight:700;">Detalle PQRS</h2>
+                <a href="{% url 'pqrs:pqrs_aprendiz' %}" class="btn btn-outline-primary">Volver</a>
+            </div>
+            
+            <div class="mb-4">
+                <h5>Información general</h5>
+                <table class="table">
+                    <tr>
+                        <th style="width: 150px;">Tipo:</th>
+                        <td>{{ pqrs.get_tipo_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Título:</th>
+                        <td>{{ pqrs.titulo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            {% if pqrs.estado == 'pendiente' %}
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif pqrs.estado == 'en_proceso' %}
+                            <span class="badge bg-info">En Proceso</span>
+                            {% else %}
+                            <span class="badge bg-success">Resuelto</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de envío:</th>
+                        <td>{{ pqrs.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="mb-4">
+                <h5>Descripción</h5>
+                <div class="border rounded p-3 bg-light">
+                    {{ pqrs.descripcion|linebreaks }}
+                </div>
+            </div>
+            
+            {% if pqrs.respuestas.exists %}
+            <div class="mb-4">
+                <h5>Respuestas</h5>
+                {% for respuesta in pqrs.respuestas.all %}
+                <div class="border rounded p-3 bg-light mb-3">
+                    <small class="text-muted">{{ respuesta.fecha_creacion|date:'d/m/Y H:i' }} - {{ respuesta.usuario.get_full_name }}</small>
+                    <div>{{ respuesta.mensaje|linebreaks }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

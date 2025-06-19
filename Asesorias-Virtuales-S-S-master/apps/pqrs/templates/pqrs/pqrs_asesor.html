@@ -1,0 +1,107 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}PQRS | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <h2 class="mb-4" style="color:#0a2342; font-weight:700;">PQRS Recibidas</h2>
+    <div class="card p-4 shadow-sm">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Título</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pqrs in pqrs_list %}
+                <tr>
+                    <td>{{ pqrs.usuario.get_full_name }}</td>
+                    <td>{{ pqrs.titulo }}</td>
+                    <td>{{ pqrs.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                    <td>
+                        {% if pqrs.estado == 'pendiente' %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                        {% elif pqrs.estado == 'en_proceso' %}
+                        <span class="badge bg-info">En Proceso</span>
+                        {% else %}
+                        <span class="badge bg-success">Resuelto</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalle{{ pqrs.id }}">Ver</button>
+                        {% if pqrs.estado == 'pendiente' %}
+                        <button class="btn btn-green btn-sm" data-bs-toggle="modal" data-bs-target="#modalResponder{{ pqrs.id }}">Responder</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                <!-- Modal Detalle PQRS -->
+                <div class="modal fade" id="modalDetalle{{ pqrs.id }}" tabindex="-1" aria-labelledby="modalDetalleLabel{{ pqrs.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="modalDetalleLabel{{ pqrs.id }}">Detalle PQRS</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                      </div>
+                      <div class="modal-body">
+                        <b>Usuario:</b> {{ pqrs.usuario.get_full_name }}<br>
+                        <b>Título:</b> {{ pqrs.titulo }}<br>
+                        <b>Descripción:</b><br>
+                        <div class="border rounded p-2 mb-2">{{ pqrs.descripcion }}</div>
+                        <b>Fecha:</b> {{ pqrs.fecha_creacion|date:'d/m/Y H:i' }}
+                        {% if pqrs.respuestas.exists %}
+                        <hr>
+                        <b>Respuestas:</b>
+                        {% for respuesta in pqrs.respuestas.all %}
+                        <div class="border rounded p-2 bg-light mb-2">
+                            <small class="text-muted">{{ respuesta.fecha_creacion|date:'d/m/Y H:i' }} - {{ respuesta.usuario.get_full_name }}</small>
+                            <div>{{ respuesta.mensaje }}</div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal Responder PQRS -->
+                <div class="modal fade" id="modalResponder{{ pqrs.id }}" tabindex="-1" aria-labelledby="modalResponderLabel{{ pqrs.id }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method="post" action="{% url 'pqrs:responder_pqrs' pqrs.id %}">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modalResponderLabel{{ pqrs.id }}">Responder PQRS</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label for="mensaje{{ pqrs.id }}" class="form-label">Respuesta</label>
+                            <textarea name="mensaje" id="mensaje{{ pqrs.id }}" class="form-control" rows="3" required></textarea>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                          <button type="submit" class="btn btn-green">Enviar respuesta</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No hay PQRS recibidas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

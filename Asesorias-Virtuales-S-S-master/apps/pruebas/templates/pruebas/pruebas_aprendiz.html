@@ -1,0 +1,61 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Mis pruebas | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Mis pruebas</h2>
+        {% if pruebas %}
+        <div class="row g-4">
+            {% for prueba in pruebas %}
+            <div class="col-md-6">
+                <div class="card p-3 shadow-sm prueba-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <span class="badge bg-primary">Grupo: {{ prueba.grupo }}</span>
+                            <h5 class="mt-2 mb-0" style="color:#0a2342;">{{ prueba.tema }}</h5>
+                            <span class="text-muted">Fecha: {{ prueba.fecha }} | Hora: {{ prueba.hora }}</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">Estado: {{ prueba.estado }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <b>Descripción:</b> {{ prueba.descripcion }}
+                    </div>
+                    {% if prueba.archivo_adjunto %}
+                    <div class="mb-2">
+                        <a href="{{ prueba.archivo_adjunto }}" class="btn btn-outline-primary btn-sm" download>Descargar archivo</a>
+                    </div>
+                    {% endif %}
+                    <div class="mb-2">
+                        <b>Fecha límite:</b> {{ prueba.fecha_limite }}
+                    </div>
+                    <div class="mb-2">
+                        <b>Instrucciones:</b> {{ prueba.instrucciones }}
+                    </div>
+                    {% if prueba.estado == 'creada' or prueba.estado == 'publicada' %}
+                    <form method="post" enctype="multipart/form-data" class="mt-2">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="archivo_entrega_{{ prueba.id }}" class="form-label">Subir entrega</label>
+                            <input type="file" name="archivo_entrega" id="archivo_entrega_{{ prueba.id }}" class="form-control" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                        </div>
+                        <button type="submit" class="btn btn-green btn-sm">Entregar</button>
+                    </form>
+                    {% elif prueba.estado == 'entregada' %}
+                    <div class="alert alert-success mt-2">¡Entrega realizada!</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info mt-4">Aún no tienes pruebas asignadas en tus grupos.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

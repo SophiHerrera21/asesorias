@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Registro Aprendiz | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg animate__animated animate__fadeInDown" style="border-radius: 24px; background: rgba(255,255,255,0.97);">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-graduate fa-4x text-success"></i>
+                        </div>
+                        <h2 class="h3 mb-2 fw-bold" style="color: #0a2342;">Registro de Aprendiz</h2>
+                        <p class="text-muted">Completa el formulario para crear tu cuenta de aprendiz</p>
+                    </div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg animate__animated animate__pulse">
+                                <i class="fas fa-user-plus me-2"></i>Registrarme
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">¿Ya tienes una cuenta? 
+                            <a href="{% url 'usuarios:login' %}" class="text-decoration-none fw-bold" style="color: #0a2342;">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 24px;
+}
+.btn-success {
+    background-color: #2ecc40;
+    border-color: #2ecc40;
+    font-size: 1.15rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    transform: scale(1.07) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(46,204,64,0.13);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación del formulario
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Mostrar/ocultar contraseña
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    // Validar que las contraseñas coincidan
+    const confirmPassword = document.querySelector('#confirm_password');
+    confirmPassword.addEventListener('input', function() {
+        if (this.value !== password.value) {
+            this.setCustomValidity('Las contraseñas no coinciden');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+});
+</script>
+{% endblock %} 

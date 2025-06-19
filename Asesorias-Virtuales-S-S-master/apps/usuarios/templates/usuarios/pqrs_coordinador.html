@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gestión de PQRS | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_coordinador' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_coordinador' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:gestion_usuarios' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Gestión de Usuarios</span></a></li>
+        <li><a href="{% url 'usuarios:cuentas_bloqueadas' %}" class="sidebar-link"><i class="fas fa-lock sidebar-icon"></i><span class="sidebar-label">Cuentas Bloqueadas</span></a></li>
+        <li><a href="{% url 'usuarios:pqrs_coordinador' %}" class="sidebar-link active"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_coordinador' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+        <li><a href="{% url 'usuarios:configuracion' %}" class="sidebar-link"><i class="fas fa-cog sidebar-icon"></i><span class="sidebar-label">Configuración</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Gestión de PQRS</h2>
+    
+    <!-- Botones de exportación -->
+    <div class="mb-3 d-flex gap-2">
+        <a href="{% url 'exportar_reporte' %}?tipo=pqrs" class="btn btn-outline-success">
+            <i class="fas fa-file-excel me-2"></i>Exportar Excel PQRS
+        </a>
+        <a href="{% url 'exportar_pdf_pqrs' %}" class="btn btn-outline-danger">
+            <i class="fas fa-file-pdf me-2"></i>Generar PDF PQRS
+        </a>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card p-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <select class="form-select" id="tipoPQRS">
+                    <option value="">Todos los tipos</option>
+                    <option value="peticion">Petición</option>
+                    <option value="queja">Queja</option>
+                    <option value="reclamo">Reclamo</option>
+                    <option value="sugerencia">Sugerencia</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="estadoPQRS">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_proceso">En Proceso</option>
+                    <option value="resuelto">Resuelto</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="fechaPQRS">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-green w-100" onclick="aplicarFiltros()">Filtrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de PQRS -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="mb-3">Distribución por Tipo</h5>
+                <canvas id="tipoPQRSChart" height="300"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="mb-3">Estado de PQRS</h5>
+                <canvas id="estadoPQRSChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de PQRS -->
+    <div class="card p-4">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Tipo</th>
+                        <th>Asunto</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pqrs in pqrs_list %}
+                    <tr>
+                        <td>#{{ pqrs.id }}</td>
+                        <td>{{ pqrs.usuario.get_full_name }}</td>
+                        <td>
+                            <span class="badge {% if pqrs.tipo == 'peticion' %}bg-info{% elif pqrs.tipo == 'queja' %}bg-danger{% elif pqrs.tipo == 'reclamo' %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ pqrs.get_tipo_display }}
+                            </span>
+                        </td>
+                        <td>{{ pqrs.asunto }}</td>
+                        <td>{{ pqrs.fecha_creacion|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge {% if pqrs.estado == 'pendiente' %}bg-warning{% elif pqrs.estado == 'en_proceso' %}bg-info{% else %}bg-success{% endif %}">
+                                {{ pqrs.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-info" onclick="verPQRS('{{ pqrs.id }}')" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="responderPQRS('{{ pqrs.id }}')" title="Responder">
+                                    <i class="fas fa-reply"></i>
+                                </button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-bs-toggle="dropdown" title="Cambiar estado">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="cambiarEstado('{{ pqrs.id }}', 'pendiente')">Pendiente</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="cambiarEstado('{{ pqrs.id }}', 'en_proceso')">En Proceso</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="cambiarEstado('{{ pqrs.id }}', 'resuelto')">Resuelto</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No hay PQRS registradas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Ver PQRS -->
+    <div class="modal fade" id="verPQRSModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles de PQRS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pqrsDetalles"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success" onclick="responderPQRSModal()">Responder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+// Gráfico de Distribución por Tipo
+const tipoPQRSChart = new Chart(document.getElementById('tipoPQRSChart').getContext('2d'), {
+    type: 'pie',
+    data: {
+        labels: ['Peticiones', 'Quejas', 'Reclamos', 'Sugerencias'],
+        datasets: [{
+            data: [
+                {{ pqrs_peticiones }},
+                {{ pqrs_quejas }},
+                {{ pqrs_reclamos }},
+                {{ pqrs_sugerencias }}
+            ],
+            backgroundColor: [
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(231, 76, 60, 0.8)',
+                'rgba(241, 196, 15, 0.8)',
+                'rgba(46, 204, 64, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Gráfico de Estado
+const estadoPQRSChart = new Chart(document.getElementById('estadoPQRSChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Pendientes', 'En Proceso', 'Resueltas'],
+        datasets: [{
+            data: [
+                {{ pqrs_pendientes }},
+                {{ pqrs_en_proceso }},
+                {{ pqrs_resueltas }}
+            ],
+            backgroundColor: [
+                'rgba(241, 196, 15, 0.8)',
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(46, 204, 64, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+let currentPQRSId = null;
+
+function aplicarFiltros() {
+    const tipo = document.getElementById('tipoPQRS').value;
+    const estado = document.getElementById('estadoPQRS').value;
+    const fecha = document.getElementById('fechaPQRS').value;
+    
+    window.location.href = `{% url 'usuarios:pqrs_coordinador' %}?tipo=${tipo}&estado=${estado}&fecha=${fecha}`;
+}
+
+function verPQRS(pqrsId) {
+    currentPQRSId = pqrsId;
+    fetch(`/usuarios/pqrs/${pqrsId}/detalles/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('pqrsDetalles').innerHTML = `
+                <div class="mb-3">
+                    <h6>Información General</h6>
+                    <p><strong>ID:</strong> #${data.id}</p>
+                    <p><strong>Usuario:</strong> ${data.usuario}</p>
+                    <p><strong>Tipo:</strong> ${data.tipo}</p>
+                    <p><strong>Estado:</strong> ${data.estado}</p>
+                    <p><strong>Fecha:</strong> ${data.fecha}</p>
+                </div>
+                <div class="mb-3">
+                    <h6>Mensaje</h6>
+                    <p>${data.mensaje}</p>
+                </div>
+                ${data.respuestas ? `
+                    <div class="mb-3">
+                        <h6>Respuestas</h6>
+                        ${data.respuestas.map(respuesta => `
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <p class="mb-1"><strong>${respuesta.usuario}</strong> - ${respuesta.fecha}</p>
+                                    <p class="mb-0">${respuesta.mensaje}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+            new bootstrap.Modal(document.getElementById('verPQRSModal')).show();
+        });
+}
+
+function responderPQRS(pqrsId) {
+    window.location.href = `/usuarios/pqrs/${pqrsId}/responder/`;
+}
+
+function responderPQRSModal() {
+    if (currentPQRSId) {
+        responderPQRS(currentPQRSId);
+    }
+}
+
+function cambiarEstado(pqrsId, nuevoEstado) {
+    if (confirm('¿Está seguro de cambiar el estado de esta PQRS?')) {
+        fetch(`/usuarios/pqrs/${pqrsId}/cambiar-estado/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ estado: nuevoEstado })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al cambiar el estado: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error al cambiar el estado');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

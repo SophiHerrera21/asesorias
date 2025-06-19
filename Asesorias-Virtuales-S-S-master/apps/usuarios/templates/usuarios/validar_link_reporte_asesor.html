@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Validar Link de Reporte | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_asesor' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_asesor' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:componentes_asesor' %}" class="sidebar-link"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+        <li><a href="{% url 'usuarios:grupos_asesor' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+        <li><a href="{% url 'usuarios:pruebas_asesor' %}" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+        <li><a href="{% url 'usuarios:pqrs_asesor' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="{% url 'usuarios:notificaciones_asesor' %}" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_asesor' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Validar Link de Reporte</h2>
+    <div class="row g-4">
+        {% for link in links %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card p-3 h-100">
+                <h5 class="mb-1"><i class="fas fa-link icon-green"></i> {{ link.nombre }}</h5>
+                <p class="mb-2">{{ link.descripcion }}</p>
+                <span class="badge bg-success">Asignado</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No tienes links de reporte para validar actualmente.</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-3" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Acciones Rápidas</h3>
+            <div class="d-flex gap-3">
+                <button class="btn btn-green" onclick="crearLinkReporte()">Crear Link de Reporte</button>
+                <button class="btn btn-green" onclick="enviarCorreoMasivo()">Enviar Correo Masivo</button>
+                <button class="btn btn-green" onclick="validarLinkReporte()">Validar Link de Reporte</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+function crearLinkReporte() {
+    // Lógica para crear link de reporte
+    alert('Creando link de reporte...');
+}
+
+function enviarCorreoMasivo() {
+    // Lógica para enviar correo masivo
+    alert('Enviando correo masivo...');
+}
+
+function validarLinkReporte() {
+    // Lógica para validar link de reporte
+    alert('Validando link de reporte...');
+}
+</script>
+{% endblock %} 

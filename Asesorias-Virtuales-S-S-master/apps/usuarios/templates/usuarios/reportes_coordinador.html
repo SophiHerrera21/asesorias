@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Reportes | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_coordinador' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_coordinador' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:gestion_usuarios' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Gestión de Usuarios</span></a></li>
+        <li><a href="{% url 'usuarios:cuentas_bloqueadas' %}" class="sidebar-link"><i class="fas fa-lock sidebar-icon"></i><span class="sidebar-label">Cuentas Bloqueadas</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_coordinador' %}" class="sidebar-link active"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+        <li><a href="{% url 'usuarios:configuracion' %}" class="sidebar-link"><i class="fas fa-cog sidebar-icon"></i><span class="sidebar-label">Configuración</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Reportes y Estadísticas</h2>
+    
+    <!-- Botones de exportación -->
+    <div class="mb-3 d-flex gap-2">
+        <a href="{% url 'exportar_reporte' %}?tipo=grupos" class="btn btn-outline-success">
+            <i class="fas fa-file-excel me-2"></i>Exportar Excel
+        </a>
+        <a href="{% url 'exportar_pdf_usuarios_componentes_grupos' %}" class="btn btn-outline-danger">
+            <i class="fas fa-file-pdf me-2"></i>Exportar PDF General
+        </a>
+    </div>
+
+    <!-- Filtros de Reportes -->
+    <div class="card p-4 mb-4">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <select class="form-select" id="tipoReporte">
+                    <option value="general">Reporte General</option>
+                    <option value="usuarios">Reporte de Usuarios</option>
+                    <option value="bloqueos">Reporte de Bloqueos</option>
+                    <option value="actividad">Reporte de Actividad</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="fechaInicio" placeholder="Fecha Inicio">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="fechaFin" placeholder="Fecha Fin">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-green w-100" onclick="generarReporte()">Generar Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-4 mb-4">
+        <!-- Gráfico de Usuarios -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="mb-3">Distribución de Usuarios</h5>
+                <canvas id="usuariosChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- Gráfico de Bloqueos -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5 class="mb-3">Estadísticas de Bloqueos</h5>
+                <canvas id="bloqueosChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Gráfico de Actividad -->
+        <div class="col-md-8">
+            <div class="card p-4">
+                <h5 class="mb-3">Actividad del Sistema</h5>
+                <canvas id="actividadChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- Resumen de Estadísticas -->
+        <div class="col-md-4">
+            <div class="card p-4">
+                <h5 class="mb-3">Resumen</h5>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h6 class="mb-1">Total Usuarios</h6>
+                        <p class="mb-0">{{ total_usuarios }}</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h6 class="mb-1">Cuentas Bloqueadas</h6>
+                        <p class="mb-0">{{ cuentas_bloqueadas }}</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h6 class="mb-1">Solicitudes Pendientes</h6>
+                        <p class="mb-0">{{ solicitudes_pendientes }}</p>
+                    </div>
+                    <div class="list-group-item">
+                        <h6 class="mb-1">Actividad Hoy</h6>
+                        <p class="mb-0">{{ actividad_hoy }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+// Gráfico de Distribución de Usuarios
+const usuariosCtx = document.getElementById('usuariosChart').getContext('2d');
+new Chart(usuariosCtx, {
+    type: 'pie',
+    data: {
+        labels: ['Aprendices', 'Asesores', 'Coordinadores'],
+        datasets: [{
+            data: [{{ aprendices_count }}, {{ asesores_count }}, {{ coordinadores_count }}],
+            backgroundColor: [
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(46, 204, 64, 0.8)',
+                'rgba(155, 89, 182, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Gráfico de Bloqueos
+const bloqueosCtx = document.getElementById('bloqueosChart').getContext('2d');
+new Chart(bloqueosCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Bloqueos',
+            data: {{ bloqueos_mensuales|safe }},
+            backgroundColor: 'rgba(231, 76, 60, 0.8)'
+        }, {
+            label: 'Desbloqueos',
+            data: {{ desbloqueos_mensuales|safe }},
+            backgroundColor: 'rgba(46, 204, 64, 0.8)'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Gráfico de Actividad
+const actividadCtx = document.getElementById('actividadChart').getContext('2d');
+new Chart(actividadCtx, {
+    type: 'line',
+    data: {
+        labels: {{ fechas_actividad|safe }},
+        datasets: [{
+            label: 'Actividad',
+            data: {{ datos_actividad|safe }},
+            borderColor: 'rgba(52, 152, 219, 1)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function generarReporte() {
+    const tipoReporte = document.getElementById('tipoReporte').value;
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    
+    // Lógica para generar reporte
+    window.location.href = `{% url 'usuarios:generar_reporte' %}?tipo=${tipoReporte}&inicio=${fechaInicio}&fin=${fechaFin}`;
+}
+</script>
+{% endblock %} 

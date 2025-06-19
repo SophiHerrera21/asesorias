@@ -1,0 +1,37 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Editar Asesoría | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container animate__animated animate__fadeIn" style="max-width: 600px;">
+    <div class="card p-4 shadow-sm mt-5">
+        <h3 class="mb-3" style="color:#0a2342; font-weight:700;">Editar asesoría</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" style="color:#0a2342;">Grupo</label>
+                {{ form.grupo|as_widget }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" style="color:#0a2342;">Componente</label>
+                {{ form.componente|as_widget }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" style="color:#0a2342;">Fecha</label>
+                {{ form.fecha|as_widget }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" style="color:#0a2342;">Hora</label>
+                {{ form.hora|as_widget }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label" style="color:#0a2342;">Enlace de videollamada</label>
+                {{ form.link_videollamada|as_widget }}
+            </div>
+            <button type="submit" class="btn btn-green w-100 mt-2">Guardar cambios</button>
+        </form>
+        <div class="mt-3 text-center">
+            <a href="{% url 'asesorias:asesorias_asesor' %}" class="text-primary">Volver a mis asesorías</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

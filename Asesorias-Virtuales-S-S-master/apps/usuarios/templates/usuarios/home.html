@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="row w-100" style="border: 3px solid #1a357a; border-radius: 24px; background: #f7fefb; box-shadow: 0 4px 24px rgba(10,35,66,0.08);">
+        <div class="col-md-5 d-flex flex-column justify-content-center align-items-center p-5">
+            <img src="{% static 'img/logo_ss.png' %}" alt="Logo grande S&S" style="max-width: 260px; width: 100%; height: auto; margin-bottom: 2rem;">
+        </div>
+        <div class="col-md-7 d-flex flex-column justify-content-center align-items-start p-5">
+            <h1 class="fw-bold mb-2" style="color: #1a357a; font-size: 2.8rem;">S&amp;S</h1>
+            <h2 class="mb-4" style="color: #2ecc71; font-size: 2rem; font-weight: 400;">ASESORÍAS VIRTUALES</h2>
+            <p class="mb-4" style="color: #1a357a; font-size: 1.2rem;">Herramienta educativa para transformar tu aprendizaje con tecnología y acompañamiento.</p>
+            <a href="{% url 'usuarios:login' %}" class="btn btn-primary btn-lg px-5 py-2 mt-2" style="background: #1a357a; border: none; border-radius: 2rem; font-size: 1.2rem;">INICIAR SESIÓN</a>
+        </div>
+    </div>
+</div>
+
+<section class="py-5 bg-light animate__animated animate__fadeInUp">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #0a2342;">¿Qué puedes hacer aquí?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-users fa-3x text-success"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Gestión de Grupos</h3>
+                        <p class="text-muted">Organiza y administra grupos de aprendizaje de manera eficiente.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-comments fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Sistema PQRS</h3>
+                        <p class="text-muted">Canaliza y gestiona peticiones, quejas, reclamos y sugerencias.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line fa-3x text-info"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Reportes y Estadísticas</h3>
+                        <p class="text-muted">Accede a informes detallados y estadísticas en tiempo real.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 animate__animated animate__fadeInUp animate__delay-1s">
+    <div class="container">
+        <h2 class="text-center mb-5" style="color: #0a2342;">Roles en la Plataforma</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow role-card">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-user-graduate fa-3x text-success"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Aprendiz</h3>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Accede a grupos de estudio</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Realiza PQRS</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Participa en pruebas</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_aprendiz' %}" class="btn btn-outline-success mt-3 w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Aprendiz
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow role-card">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Asesor</h3>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Gestiona grupos</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Atiende PQRS</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Crea y evalúa pruebas</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_asesor' %}" class="btn btn-outline-primary mt-3 w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Asesor
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow role-card">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-user-tie fa-3x text-info"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Coordinador</h3>
+                        <ul class="list-unstyled text-muted">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Administra usuarios</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Gestiona PQRS</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Genera reportes</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_coordinador' %}" class="btn btn-outline-info mt-3 w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Coordinador
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-primary text-white animate__animated animate__fadeInUp animate__delay-2s">
+    <div class="container text-center">
+        <h2 class="mb-4">¿Listo para comenzar?</h2>
+        <p class="lead mb-4">Únete a nuestra plataforma y forma parte de la comunidad educativa</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'usuarios:login' %}" class="btn btn-light btn-lg px-4 animate__animated animate__pulse">
+                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            </a>
+            <a href="{% url 'usuarios:seleccionar_rol' %}" class="btn btn-outline-light btn-lg px-4 animate__animated animate__pulse">
+                <i class="fas fa-user-plus me-2"></i>Registrarse
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+body {
+    background: #f7fefb;
+}
+.hero-section {
+    min-height: 90vh;
+    background: linear-gradient(135deg, #0a2342 0%, #1a4b8c 100%);
+    position: relative;
+    overflow: hidden;
+}
+.hero-section .btn {
+    font-size: 1.3rem;
+    border-radius: 2rem;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.hero-section .btn:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 8px 32px rgba(46,204,64,0.2);
+}
+.feature-card, .role-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.feature-card:hover, .role-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(10,35,66,0.12);
+}
+.feature-icon, .role-icon {
+    transition: transform 0.3s;
+}
+.feature-card:hover .feature-icon, .role-card:hover .role-icon {
+    transform: scale(1.15) rotate(-8deg);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script>
+particlesJS.load('particles-js', '{% static "js/particles.json" %}', function() {
+  console.log('particles.js loaded');
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,52 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Mis reportes | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Mis reportes</h2>
+        <div class="card p-4 shadow-sm mb-4">
+            <h5 class="mb-3">Progreso de entregas</h5>
+            <canvas id="progresoChart" height="120"></canvas>
+        </div>
+        <div class="card p-4 shadow-sm">
+            <h5 class="mb-3">Participación en grupos</h5>
+            <canvas id="gruposChart" height="120"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+// Datos de ejemplo, reemplazar por datos reales desde la vista
+const progresoData = {
+    labels: ['Pruebas entregadas', 'Pruebas pendientes'],
+    datasets: [{
+        data: [{{ entregadas|default:0 }}, {{ pendientes|default:0 }}],
+        backgroundColor: ['#2ecc40', '#0a2342'],
+    }]
+};
+const gruposData = {
+    labels: [{% for g in grupos %}'{{ g.nombre }}',{% endfor %}],
+    datasets: [{
+        label: 'Participación',
+        data: [{% for g in grupos %}{{ g.participacion }},{% endfor %}],
+        backgroundColor: '#2ecc40',
+    }]
+};
+new Chart(document.getElementById('progresoChart'), {
+    type: 'doughnut',
+    data: progresoData,
+    options: {responsive: true, plugins: {legend: {position: 'bottom'}}}
+});
+new Chart(document.getElementById('gruposChart'), {
+    type: 'bar',
+    data: gruposData,
+    options: {responsive: true, plugins: {legend: {display: false}}}
+});
+</script>
+{% endblock %} 

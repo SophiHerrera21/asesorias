@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Selecciona tu rol | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);">
+    <div class="container py-5">
+        <div class="text-center mb-5 animate__animated animate__fadeInDown">
+            <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="mb-4" style="height: 80px;">
+            <h1 class="display-5 mb-3 fw-bold" style="color: #0a2342;">Selecciona tu rol</h1>
+            <p class="lead text-muted">Elige el tipo de cuenta que mejor se adapte a tus necesidades y accede a una experiencia personalizada.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <!-- Aprendiz Card -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-lg hover-card animate__animated animate__fadeInLeft" style="border-radius: 20px;">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-user-graduate fa-4x text-success"></i>
+                        </div>
+                        <h3 class="h4 mb-3 fw-bold">Aprendiz</h3>
+                        <p class="text-muted mb-4">Accede a asesorías, materiales y reportes de tu progreso académico.</p>
+                        <ul class="list-unstyled mb-4 text-start mx-auto" style="max-width: 250px;">
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Materiales de estudio</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Seguimiento de progreso</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>PQRS y grupos</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_aprendiz' %}" class="btn btn-success btn-lg w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Aprendiz
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Asesor Card -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-lg hover-card animate__animated animate__fadeInUp" style="border-radius: 20px;">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-4x text-primary"></i>
+                        </div>
+                        <h3 class="h4 mb-3 fw-bold">Asesor</h3>
+                        <p class="text-muted mb-4">Gestiona grupos, asesorías y evalúa el desempeño de aprendices.</p>
+                        <ul class="list-unstyled mb-4 text-start mx-auto" style="max-width: 250px;">
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Gestión de grupos</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Evaluación y reportes</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>PQRS y seguimiento</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_asesor' %}" class="btn btn-primary btn-lg w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Asesor
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Coordinador Card -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-lg hover-card animate__animated animate__fadeInRight" style="border-radius: 20px;">
+                    <div class="card-body p-4 text-center">
+                        <div class="role-icon mb-3">
+                            <i class="fas fa-user-tie fa-4x text-info"></i>
+                        </div>
+                        <h3 class="h4 mb-3 fw-bold">Coordinador</h3>
+                        <p class="text-muted mb-4">Administra la plataforma, usuarios y reportes institucionales.</p>
+                        <ul class="list-unstyled mb-4 text-start mx-auto" style="max-width: 250px;">
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Administración de usuarios</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Gestión de PQRS</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Reportes institucionales</li>
+                        </ul>
+                        <a href="{% url 'usuarios:registro_coordinador' %}" class="btn btn-info btn-lg w-100 animate__animated animate__pulse">
+                            <i class="fas fa-user-plus me-2"></i>Registrarme como Coordinador
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5 animate__animated animate__fadeInUp animate__delay-1s">
+            <p class="text-muted">¿Ya tienes una cuenta? <a href="{% url 'usuarios:login' %}" class="text-decoration-none fw-bold" style="color: #0a2342;">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.hover-card:hover {
+    transform: translateY(-12px) scale(1.04);
+    box-shadow: 0 16px 40px rgba(10,35,66,0.13) !important;
+    z-index: 2;
+}
+.role-icon {
+    transition: transform 0.3s;
+}
+.hover-card:hover .role-icon {
+    transform: scale(1.13) rotate(-6deg);
+}
+.btn {
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    font-size: 1.1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+}
+.btn:hover {
+    transform: scale(1.07) translateY(-2px);
+    box-shadow: 0 8px 32px rgba(46,204,64,0.13);
+}
+</style>
+{% endblock %} 

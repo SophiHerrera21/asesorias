@@ -1,0 +1,28 @@
+{% extends 'usuarios/base_dashboard.html' %}
+{% load static %}
+{% block dashboard_title %}Mi perfil{% endblock %}
+{% block dashboard_content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow p-4" style="max-width: 480px; width: 100%; border-radius: 18px;">
+        <div class="d-flex flex-column align-items-center mb-3">
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; font-size: 3rem; color: #0093E9;">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h4 class="fw-bold mb-1">{{ usuario.get_full_name|default:usuario.username }}</h4>
+            <span class="text-muted">{{ usuario.email }}</span>
+        </div>
+        <ul class="list-unstyled mb-4">
+            <li><b>Teléfono:</b> {{ usuario.telefono|default:'No registrado' }}</li>
+            <li><b>Cargo:</b> {{ usuario.coordinador.cargo|default:'-' }}</li>
+        </ul>
+        <div class="d-flex justify-content-between gap-2">
+            <a href="{% url 'usuarios:perfil_coordinador' %}?edit=1" class="btn btn-outline-primary flex-fill">Modificar</a>
+            <form method="post" action="{% url 'usuarios:eliminar_cuenta' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger flex-fill">Eliminar</button>
+            </form>
+            <a href="{% url 'exportar_pdf_usuarios_componentes_grupos' %}" class="btn btn-success flex-fill">Generar reporte</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

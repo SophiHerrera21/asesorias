@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Responder PQRS | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_coordinador' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_coordinador' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:gestion_usuarios' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Gestión de Usuarios</span></a></li>
+        <li><a href="{% url 'usuarios:cuentas_bloqueadas' %}" class="sidebar-link"><i class="fas fa-lock sidebar-icon"></i><span class="sidebar-label">Cuentas Bloqueadas</span></a></li>
+        <li><a href="{% url 'usuarios:pqrs_coordinador' %}" class="sidebar-link active"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_coordinador' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+        <li><a href="{% url 'usuarios:configuracion' %}" class="sidebar-link"><i class="fas fa-cog sidebar-icon"></i><span class="sidebar-label">Configuración</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container">
+        <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Responder PQRS</h2>
+        
+        <!-- Detalles de la PQRS -->
+        <div class="card p-4 mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">Información de la PQRS</h5>
+                    <p><strong>ID:</strong> #{{ pqrs.id }}</p>
+                    <p><strong>Usuario:</strong> {{ pqrs.usuario.get_full_name }}</p>
+                    <p><strong>Tipo:</strong> {{ pqrs.get_tipo_display }}</p>
+                    <p><strong>Estado Actual:</strong> 
+                        <span class="badge {% if pqrs.estado == 'pendiente' %}bg-warning{% elif pqrs.estado == 'en_proceso' %}bg-info{% else %}bg-success{% endif %}">
+                            {{ pqrs.get_estado_display }}
+                        </span>
+                    </p>
+                    <p><strong>Fecha de Creación:</strong> {{ pqrs.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mb-3">Mensaje Original</h5>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <p class="mb-0">{{ pqrs.mensaje }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Respuestas -->
+        {% if respuestas %}
+        <div class="card p-4 mb-4">
+            <h5 class="mb-3">Historial de Respuestas</h5>
+            {% for respuesta in respuestas %}
+            <div class="card mb-3 {% if respuesta.es_coordinador %}bg-light{% endif %}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>{{ respuesta.usuario.get_full_name }}</strong>
+                        <small class="text-muted">{{ respuesta.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <p class="mb-0">{{ respuesta.mensaje }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Formulario de Respuesta -->
+        <div class="card p-4">
+            <h5 class="mb-3">Responder PQRS</h5>
+            <form method="post" id="respuestaForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="estado" class="form-label">Cambiar Estado</label>
+                    <select class="form-select" id="estado" name="estado" required>
+                        <option value="pendiente" {% if pqrs.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                        <option value="en_proceso" {% if pqrs.estado == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                        <option value="resuelto" {% if pqrs.estado == 'resuelto' %}selected{% endif %}>Resuelto</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="mensaje" class="form-label">Mensaje de Respuesta</label>
+                    <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="notificar" name="notificar" checked>
+                        <label class="form-check-label" for="notificar">
+                            Notificar al usuario por correo electrónico
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-green">
+                        <i class="fas fa-paper-plane"></i> Enviar Respuesta
+                    </button>
+                    <a href="{% url 'usuarios:pqrs_coordinador' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+document.getElementById('respuestaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const estado = document.getElementById('estado').value;
+    const mensaje = document.getElementById('mensaje').value;
+    const notificar = document.getElementById('notificar').checked;
+    
+    if (!mensaje.trim()) {
+        alert('Por favor, ingrese un mensaje de respuesta');
+        return;
+    }
+    
+    // Enviar la respuesta
+    fetch('{% url "usuarios:responder_pqrs" pqrs.id %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            estado: estado,
+            mensaje: mensaje,
+            notificar: notificar
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Respuesta enviada exitosamente');
+            window.location.href = "{% url 'usuarios:pqrs_coordinador' %}";
+        } else {
+            alert('Error al enviar la respuesta: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error al enviar la respuesta');
+        console.error('Error:', error);
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

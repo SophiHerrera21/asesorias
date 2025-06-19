@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Reportes | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_aprendiz' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_aprendiz' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:seleccionar_componentes' %}" class="sidebar-link"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+        <li><a href="{% url 'usuarios:grupos_aprendiz' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+        <li><a href="{% url 'usuarios:pruebas_aprendiz' %}" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+        <li><a href="{% url 'usuarios:pqrs_aprendiz' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="{% url 'usuarios:notificaciones_aprendiz' %}" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_aprendiz' %}" class="sidebar-link active"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Reportes y Progreso</h2>
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <i class="fas fa-file-alt fa-2x icon-green mb-2"></i>
+                <h5 class="mb-1">Pruebas Entregadas</h5>
+                <p class="mb-0">{{ pruebas_entregadas }} de {{ total_pruebas }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <i class="fas fa-users fa-2x icon-green mb-2"></i>
+                <h5 class="mb-1">Grupos Activos</h5>
+                <p class="mb-0">{{ grupos_activos }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 text-center">
+                <i class="fas fa-question-circle fa-2x icon-green mb-2"></i>
+                <h5 class="mb-1">PQRS Enviadas</h5>
+                <p class="mb-0">{{ pqrs_enviadas }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card p-4">
+        <h5 class="mb-3">Progreso General</h5>
+        <canvas id="progresoChart" height="120"></canvas>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+// Gráfico de progreso (ejemplo)
+const ctx = document.getElementById('progresoChart').getContext('2d');
+const progresoChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Pruebas', 'Grupos', 'PQRS'],
+        datasets: [{
+            data: [{{ pruebas_entregadas }}, {{ grupos_activos }}, {{ pqrs_enviadas }}],
+            backgroundColor: ['#22c55e', '#1e3a8a', '#a3e635'],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { display: true, position: 'bottom' }
+        }
+    }
+});
+</script>
+{% endblock %} 

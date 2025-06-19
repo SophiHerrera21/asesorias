@@ -1,0 +1,77 @@
+{% extends 'usuarios/base_dashboard.html' %}
+{% load static %}
+{% block dashboard_sidebar %}
+    <li><a href="{% url 'usuarios:dashboard_asesor' %}" class="sidebar-link active"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+    <li><a href="{% url 'usuarios:perfil_asesor' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Mi perfil</span></a></li>
+    <li><a href="{% url 'usuarios:componentes_asesor' %}" class="sidebar-link"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+    <li><a href="{% url 'usuarios:grupos_asesor' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+    <li><a href="{% url 'usuarios:pruebas_asesor' %}" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+    <li><a href="{% url 'usuarios:pqrs_asesor' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+    <li><a href="{% url 'usuarios:notificaciones_asesor' %}" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+    <li><a href="{% url 'usuarios:reportes_asesor' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+{% endblock %}
+{% block dashboard_title %}Dashboard Asesor{% endblock %}
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Mis Grupos</h5>
+                <p class="card-text">Gestiona tus grupos de asesoría</p>
+                <a href="{% url 'usuarios:grupos_asesor' %}" class="btn btn-primary">Ver Grupos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Mis Pruebas</h5>
+                <p class="card-text">Crea y gestiona evaluaciones</p>
+                <a href="{% url 'usuarios:pruebas_asesor' %}" class="btn btn-success">Gestionar Pruebas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-question-circle fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">PQRS</h5>
+                <p class="card-text">Responde peticiones y consultas</p>
+                <a href="{% url 'usuarios:pqrs_asesor' %}" class="btn btn-warning">Ver PQRS</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-puzzle-piece fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Componentes</h5>
+                <p class="card-text">Gestiona componentes de formación</p>
+                <a href="{% url 'usuarios:componentes_asesor' %}" class="btn btn-info">Ver Componentes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-bell fa-3x text-secondary mb-3"></i>
+                <h5 class="card-title">Notificaciones</h5>
+                <p class="card-text">Revisa tus notificaciones</p>
+                <a href="{% url 'usuarios:notificaciones_asesor' %}" class="btn btn-secondary">Ver Notificaciones</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-3x text-dark mb-3"></i>
+                <h5 class="card-title">Reportes</h5>
+                <p class="card-text">Genera reportes de actividad</p>
+                <a href="{% url 'usuarios:reportes_asesor' %}" class="btn btn-dark">Ver Reportes</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

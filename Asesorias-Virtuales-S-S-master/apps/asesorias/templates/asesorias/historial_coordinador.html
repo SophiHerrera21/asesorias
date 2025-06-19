@@ -1,0 +1,105 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Historial de Asesorías | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Historial de Asesorías</h2>
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="grupo" class="form-label">Grupo</label>
+            <select name="grupo" id="grupo" class="form-select">
+                <option value="">Todos</option>
+                {% for grupo in grupos %}
+                <option value="{{ grupo.id }}" {% if grupo.id|stringformat:'s' == grupo_sel %}selected{% endif %}>{{ grupo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="componente" class="form-label">Componente</label>
+            <select name="componente" id="componente" class="form-select">
+                <option value="">Todos</option>
+                {% for comp in componentes %}
+                <option value="{{ comp.id }}" {% if comp.id|stringformat:'s' == componente_sel %}selected{% endif %}>{{ comp.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-2">
+            <label for="fecha_fin" class="form-label">Fecha Fin</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-2">
+            <label for="estado" class="form-label">Estado</label>
+            <select name="estado" id="estado" class="form-select">
+                <option value="">Todos</option>
+                <option value="realizada" {% if estado_sel == 'realizada' %}selected{% endif %}>Realizada</option>
+                <option value="pendiente" {% if estado_sel == 'pendiente' %}selected{% endif %}>Pendiente</option>
+            </select>
+        </div>
+        <div class="col-md-12 d-flex justify-content-end mt-2">
+            <button type="submit" class="btn btn-green me-2">Filtrar</button>
+            <a href="{% url 'asesorias:exportar_historial_asesorias' %}?grupo={{ grupo_sel }}&componente={{ componente_sel }}&fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}&estado={{ estado_sel }}" class="btn btn-outline-primary">Exportar a Excel</a>
+        </div>
+    </form>
+    <div class="card p-4 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Grupo</th>
+                        <th>Componente</th>
+                        <th>Asesor</th>
+                        <th>Aprendices</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                        <th>Enlace videollamada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asesoria in asesorias %}
+                    <tr>
+                        <td>{{ asesoria.id }}</td>
+                        <td>{{ asesoria.grupo.nombre }}</td>
+                        <td>{{ asesoria.componente.nombre }}</td>
+                        <td>{{ asesoria.grupo.asesor.get_full_name }}</td>
+                        <td>
+                            {% for aprendiz in asesoria.grupo.aprendices.all %}
+                                {{ aprendiz.get_full_name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ asesoria.fecha|date:'d/m/Y' }}</td>
+                        <td>{{ asesoria.hora|time:'H:i' }}</td>
+                        <td>
+                            {% if asesoria.realizada %}
+                                <span class="badge bg-success">Realizada</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if asesoria.link_videollamada %}
+                                <a href="{{ asesoria.link_videollamada }}" target="_blank">Unirse</a>
+                            {% else %}
+                                <span class="text-muted">No asignado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No hay asesorías registradas con estos filtros.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

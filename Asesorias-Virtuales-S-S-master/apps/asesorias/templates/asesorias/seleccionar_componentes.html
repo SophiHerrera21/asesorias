@@ -1,0 +1,56 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Seleccionar componentes | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center animate__animated animate__fadeIn">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm">
+            <h2 class="mb-2" style="color:#0a2342; font-weight:700;">Seleccionar componentes</h2>
+            <p class="mb-4" style="color:#0a2342;">Selecciona un máximo de dos componentes</p>
+            <form id="componentesForm" method="post">
+                {% csrf_token %}
+                <div class="row g-3">
+                    {% for componente in componentes %}
+                    <div class="col-md-6">
+                        <label class="componente-card">
+                            <input type="checkbox" name="componentes" value="{{ componente.id_componente }}" class="componente-checkbox">
+                            <span class="checkmark"></span>
+                            {{ componente.nombre }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-end mt-4 gap-2">
+                    <button type="submit" class="btn btn-green" id="btnAceptar">Aceptar</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-primary">Cancelar</a>
+                </div>
+                <div id="maxMsg" class="mt-2 text-danger" style="display:none;">Solo puedes seleccionar hasta dos componentes.</div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirmar selección</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de tu selección de componentes? Recuerda que solo puedes cambiarla contactando a tu coordinador.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-green" id="confirmarSeleccion">Sí, aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/aprendiz.js' %}"></script>
+{% endblock %} 

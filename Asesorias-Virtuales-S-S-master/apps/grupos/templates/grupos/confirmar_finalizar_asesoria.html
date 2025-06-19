@@ -1,0 +1,22 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Confirmar Finalización | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow p-4">
+                <h3 class="mb-3 text-center">Finalizar asesoría</h3>
+                <p class="text-center">¿Estás seguro de finalizar la asesoría del grupo <b>{{ grupo.nombre }}</b>?<br>
+                Esta acción es irreversible y notificará a todos los integrantes.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'grupos:grupos_asesor' %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Sí, finalizar asesoría</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

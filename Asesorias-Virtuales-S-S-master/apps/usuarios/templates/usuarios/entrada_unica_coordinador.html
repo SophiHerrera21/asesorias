@@ -1,0 +1,16 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Entrada Única Coordinador | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="container animate__animated animate__fadeIn" style="max-width: 600px;">
+    <div class="card p-4 shadow-sm mt-5">
+        <h2 class="mb-3" style="color:#0a2342; font-weight:700;">Bienvenido, Coordinador</h2>
+        <p class="mb-3">Has accedido a la entrada única y segura para coordinadores.</p>
+        <div class="alert alert-warning">
+            <b>Advertencia:</b> Esta sección es exclusiva para coordinadores autorizados.<br>
+            Toda acción será registrada y monitoreada por seguridad institucional.
+        </div>
+        <a href="{% url 'usuarios:configuracion_coordinador' %}" class="btn btn-green mt-3">Ir a Configuración</a>
+    </div>
+</div>
+{% endblock %} 

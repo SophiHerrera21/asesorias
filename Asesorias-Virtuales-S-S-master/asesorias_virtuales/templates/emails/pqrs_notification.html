@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 0 0 5px 5px;
+        }
+        .pqrs-details {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            border-left: 4px solid #4a90e2;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nueva PQRS Recibida</h1>
+        </div>
+        <div class="content">
+            <p>Se ha recibido una nueva PQRS que requiere tu atención.</p>
+            
+            <div class="pqrs-details">
+                <h3>Detalles de la PQRS:</h3>
+                <p><strong>Asunto:</strong> {{ pqrs.subject }}</p>
+                <p><strong>Remitente:</strong> {{ user.get_full_name }}</p>
+                <p><strong>Fecha:</strong> {{ pqrs.created_at|date:"d/m/Y H:i" }}</p>
+                <p><strong>Tipo:</strong> {{ pqrs.get_type_display }}</p>
+                <p><strong>Estado:</strong> {{ pqrs.get_status_display }}</p>
+                <p><strong>Mensaje:</strong></p>
+                <p>{{ pqrs.message }}</p>
+            </div>
+
+            <p>Para responder a esta PQRS, accede a la plataforma:</p>
+            <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'pqrs_detail' pqrs.id %}" class="button">Ver PQRS</a>
+
+            <p>Recuerda que es importante dar respuesta oportuna a las PQRS para mantener una buena experiencia de usuario.</p>
+        </div>
+    </div>
+</body>
+</html> 

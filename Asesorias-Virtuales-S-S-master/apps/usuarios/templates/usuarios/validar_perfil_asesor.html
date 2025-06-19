@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Validar Perfil | S&S Asesorías Virtuales{% endblock %}
+{% block content %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="{% static 'img/logo_ss.png' %}" alt="Logo S&S" class="logo">
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'usuarios:dashboard_asesor' %}" class="sidebar-link"><i class="fas fa-home sidebar-icon"></i><span class="sidebar-label">Inicio</span></a></li>
+        <li><a href="{% url 'usuarios:perfil_asesor' %}" class="sidebar-link"><i class="fas fa-user sidebar-icon"></i><span class="sidebar-label">Perfil</span></a></li>
+        <li><a href="{% url 'usuarios:componentes_asesor' %}" class="sidebar-link"><i class="fas fa-puzzle-piece sidebar-icon"></i><span class="sidebar-label">Componentes</span></a></li>
+        <li><a href="{% url 'usuarios:grupos_asesor' %}" class="sidebar-link"><i class="fas fa-users sidebar-icon"></i><span class="sidebar-label">Grupos</span></a></li>
+        <li><a href="{% url 'usuarios:pruebas_asesor' %}" class="sidebar-link"><i class="fas fa-file-alt sidebar-icon"></i><span class="sidebar-label">Pruebas</span></a></li>
+        <li><a href="{% url 'usuarios:pqrs_asesor' %}" class="sidebar-link"><i class="fas fa-question-circle sidebar-icon"></i><span class="sidebar-label">PQRS</span></a></li>
+        <li><a href="{% url 'usuarios:notificaciones_asesor' %}" class="sidebar-link"><i class="fas fa-bell sidebar-icon"></i><span class="sidebar-label">Notificaciones</span></a></li>
+        <li><a href="{% url 'usuarios:reportes_asesor' %}" class="sidebar-link"><i class="fas fa-chart-bar sidebar-icon"></i><span class="sidebar-label">Reportes</span></a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="{% url 'usuarios:logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt sidebar-icon"></i><span class="sidebar-label">Cerrar sesión</span></a>
+    </div>
+</div>
+<div class="main-content">
+    <h2 class="mb-4" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Validar Perfil</h2>
+    <div class="row g-4">
+        {% for perfil in perfiles %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card p-3 h-100">
+                <h5 class="mb-1"><i class="fas fa-user icon-green"></i> {{ perfil.nombre }}</h5>
+                <p class="mb-2">{{ perfil.descripcion }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-success">Asignado</span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editarPerfil({{ perfil.id }})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No tienes perfiles para validar actualmente.</div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3 class="mb-3" style="color:#1e3a8a; font-family:'Playfair Display',serif; font-style:italic;">Acciones Rápidas</h3>
+            <div class="d-flex gap-3">
+                <button class="btn btn-primary" onclick="crearPerfil()">
+                    <i class="fas fa-plus"></i> Crear Perfil
+                </button>
+                <button class="btn btn-info" onclick="enviarCorreoMasivo()">
+                    <i class="fas fa-envelope"></i> Enviar Correo Masivo
+                </button>
+                <button class="btn btn-success" onclick="validarPerfil()">
+                    <i class="fas fa-check"></i> Validar Perfil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para crear/editar perfil -->
+<div class="modal fade" id="perfilModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="perfilForm">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombrePerfil" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcionPerfil" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarPerfil()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const sidebar = document.getElementById('sidebar');
+sidebar.addEventListener('mouseenter', () => sidebar.classList.add('expanded'));
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('expanded'));
+
+let perfilId = null;
+const perfilModal = new bootstrap.Modal(document.getElementById('perfilModal'));
+
+function crearPerfil() {
+    perfilId = null;
+    document.getElementById('nombrePerfil').value = '';
+    document.getElementById('descripcionPerfil').value = '';
+    perfilModal.show();
+}
+
+function editarPerfil(id) {
+    perfilId = id;
+    // Aquí deberías hacer una llamada AJAX para obtener los datos del perfil
+    fetch(`/usuarios/perfil/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('nombrePerfil').value = data.nombre;
+            document.getElementById('descripcionPerfil').value = data.descripcion;
+            perfilModal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar el perfil');
+        });
+}
+
+function guardarPerfil() {
+    const nombre = document.getElementById('nombrePerfil').value;
+    const descripcion = document.getElementById('descripcionPerfil').value;
+    
+    if (!nombre || !descripcion) {
+        alert('Por favor complete todos los campos');
+        return;
+    }
+    
+    const data = {
+        nombre: nombre,
+        descripcion: descripcion
+    };
+    
+    const url = perfilId ? `/usuarios/perfil/${perfilId}/` : '/usuarios/perfil/';
+    const method = perfilId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        perfilModal.hide();
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al guardar el perfil');
+    });
+}
+
+function enviarCorreoMasivo() {
+    if (confirm('¿Está seguro de enviar correos masivos a todos los usuarios?')) {
+        fetch('/usuarios/enviar-correo-masivo/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Correos enviados exitosamente');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar los correos');
+        });
+    }
+}
+
+function validarPerfil() {
+    if (confirm('¿Está seguro de validar todos los perfiles pendientes?')) {
+        fetch('/usuarios/validar-perfiles/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Perfiles validados exitosamente');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al validar los perfiles');
+        });
+    }
+}
+
+// Función auxiliar para obtener el token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

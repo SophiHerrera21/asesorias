@@ -1,0 +1,57 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Entregar prueba | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center animate__animated animate__fadeIn">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm">
+            <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Entregar prueba</h2>
+            
+            <div class="alert alert-info mb-4">
+                <h5 class="alert-heading">Información de la prueba</h5>
+                <p class="mb-0">
+                    <strong>Nombre:</strong> {{ prueba.nombre }}<br>
+                    <strong>Grupo:</strong> {{ prueba.grupo.nombre }}<br>
+                    <strong>Fecha límite:</strong> {{ prueba.fecha_limite|date:'d/m/Y H:i' }}<br>
+                    <strong>Intentos restantes:</strong> {{ intentos_restantes }}
+                </p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="{{ form.archivo.id_for_label }}" class="form-label">{{ form.archivo.label }}</label>
+                    {{ form.archivo }}
+                    <div class="form-text">
+                        Formatos permitidos: PDF, DOC, DOCX. Tamaño máximo: 10MB
+                    </div>
+                    {% if form.archivo.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.archivo.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.observaciones.id_for_label }}" class="form-label">{{ form.observaciones.label }}</label>
+                    {{ form.observaciones }}
+                    {% if form.observaciones.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.observaciones.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'pruebas_aprendiz' %}" class="btn btn-outline-primary">Cancelar</a>
+                    <button type="submit" class="btn btn-green">Entregar prueba</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

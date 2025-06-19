@@ -1,0 +1,94 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Grupos | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container-fluid animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color:#0a2342; font-weight:700;">Mis Grupos</h2>
+        <button class="btn btn-green" data-bs-toggle="modal" data-bs-target="#modalReunion">Programar reunión</button>
+    </div>
+    <div class="row">
+        {% for grupo in grupos %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ grupo.nombre }} <span class="badge bg-primary">NIT: {{ grupo.nit }}</span></h5>
+                    <p class="card-text"><b>Componente:</b> {{ grupo.componente.nombre }}</p>
+                    <p class="card-text"><b>Aprendices:</b></p>
+                    <ul class="list-group mb-2">
+                        {% for aprendiz in grupo.aprendices %}
+                        <li class="list-group-item">{{ aprendiz.get_full_name }} ({{ aprendiz.email }})</li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">Sin aprendices asignados.</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'notificaciones_asesor' %}?grupo={{ grupo.id }}" class="btn btn-outline-primary btn-sm">Enviar correo masivo</a>
+                        <button class="btn btn-outline-danger btn-sm" onclick="confirm('¿Eliminar este grupo?')">Eliminar</button>
+                        {% if grupo.estado == 'activo' %}
+                            {% with fecha_minima=grupo.fecha_inicio|add:'30' %}
+                                {% if grupo.fecha_inicio and today >= grupo.fecha_inicio|add:'30' %}
+                                    <a href="{% url 'grupos:finalizar_asesoria' grupo.id %}" class="btn btn-warning btn-sm">Finalizar asesoría</a>
+                                {% else %}
+                                    <button class="btn btn-warning btn-sm" disabled>
+                                        Podrás finalizar la asesoría a partir del {{ grupo.fecha_inicio|add:'30' }}
+                                    </button>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No tienes grupos asignados.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- Modal Programar Reunión -->
+<div class="modal fade" id="modalReunion" tabindex="-1" aria-labelledby="modalReunionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'programar_reunion' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalReunionLabel">Programar reunión</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="grupo_reunion" class="form-label">Grupo</label>
+            <select name="grupo" id="grupo_reunion" class="form-select" required>
+              <option value="">Selecciona un grupo</option>
+              {% for grupo in grupos %}
+              <option value="{{ grupo.id }}">{{ grupo.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="date" name="fecha" id="fecha" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="hora" class="form-label">Hora</label>
+            <input type="time" name="hora" id="hora" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="enlace" class="form-label">Enlace de reunión</label>
+            <input type="url" name="enlace" id="enlace" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-green">Programar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,28 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% block title %}Notificaciones | S&S Asesorías Virtuales{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/aprendiz.css' %}">
+{% endblock %}
+{% block content %}
+<div class="row animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h2 class="mb-4" style="color:#0a2342; font-weight:700;">Notificaciones</h2>
+        {% if notificaciones %}
+        <ul class="list-group">
+            {% for notif in notificaciones %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <b>{{ notif.titulo }}</b><br>
+                    <span class="text-muted">{{ notif.mensaje }}</span>
+                </div>
+                <span class="badge bg-primary">{{ notif.fecha|date:'d/m/Y H:i' }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="alert alert-info">No tienes notificaciones nuevas.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
